@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body{
+            background-color: bisque;
+            text-align: center;
+        }
+        .draggable {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            cursor: pointer;
+        }
+        button{
+            width: 200px;
+            height: 60px;
+            background-color: rgb(11, 10, 10);
+            color: white;
+            border-radius: 5px;
+            border-color: none;
+            font-size: 15px;
+        }
+
+        button:hover {
+            transform: translateX(2px); 
+            cursor: pointer;
+
+        }
+        
+        
+    </style>
+    <title>Puzzle</title>
+</head>
+<body>
+
+    <img src="img/1.jpg" alt="Drag me" class="draggable" id="image1" data-correct-x="550" data-correct-y="150">
+    <img src="img/2.jpg" alt="Drag me" class="draggable" id="image2" data-correct-x="750" data-correct-y="150">
+    <img src="img/3.jpg" alt="Drag me" class="draggable" id="image3" data-correct-x="550" data-correct-y="350">
+    <img src="img/4.jpg" alt="Drag me" class="draggable" id="image4" data-correct-x="750" data-correct-y="350">
+
+    <button onclick="checkCompletion()">Проверить правильность</button>
+    <button onclick="solvePuzzle()">Собрать пазл автоматически</button>
+    <button onclick="randomPlace()">Разбросать пазлы</button>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    randomPlace();
+    });
+
+    function randomPlace() {
+    const images = document.querySelectorAll(".draggable");
+
+    images.forEach(image => {
+        const randomX = Math.floor(Math.random() * window.innerWidth);
+        const randomY = Math.floor(Math.random() * window.innerHeight);
+        image.style.left = `${randomX}px`;
+        image.style.top = `${randomY}px`;
+    });
+}
+
+        let activeElement = null;
+
+        document.addEventListener("mousedown", startDrag);
+        document.addEventListener("mousemove", dragElement);
+        document.addEventListener("mouseup", endDrag);
+
+        function startDrag(e) {
+            if (e.target.classList.contains("draggable")) {
+                activeElement = e.target;
+                activeElement.style.zIndex = "1000";
+            }
+        }
+        function dragElement(e) {
+            if (activeElement) {
+                activeElement.style.left = e.clientX - activeElement.clientWidth / 2 + "px";
+                activeElement.style.top = e.clientY - activeElement.clientHeight / 2 + "px";
+            }
+        }
+        function endDrag() {
+            if (activeElement) {
+                activeElement.style.zIndex = "auto";
+                activeElement = null;
+            }
+        }
+
+        function checkCompletion() {
+            const images = document.querySelectorAll(".draggable");
+            let isCorrect = true;
+
+            images.forEach(image => {
+                const correctX = parseInt(image.getAttribute("data-correct-x"));
+                const correctY = parseInt(image.getAttribute("data-correct-y"));
+                const currentX = parseInt(image.style.left || 0);
+                const currentY = parseInt(image.style.top || 0);
+
+                if (currentX !== correctX || currentY !== correctY) {
+                    isCorrect = false;
+                }
+            });
+
+            if (isCorrect) {
+                alert("Рисунок собран правильно!");
+            } else {
+                alert("Рисунок собран неправильно. Попробуйте еще раз.");
+            }
+        }
+        function solvePuzzle() {
+            const images = document.querySelectorAll(".draggable");
+
+            images.forEach(image => {
+                const targetX = parseInt(image.getAttribute("data-correct-x"));
+                const targetY = parseInt(image.getAttribute("data-correct-y"));
+
+                image.style.left = targetX + "px";
+                image.style.top = targetY + "px";
+            });
+
+            // alert("Пазл собран автоматически!");
+        }
+    </script>
+
+</body>
+</html>
